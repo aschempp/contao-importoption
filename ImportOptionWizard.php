@@ -97,6 +97,7 @@ class ImportOptionWizard extends OptionWizard
 <form action="'.ampersand($this->Environment->request, true).'" id="tl_option_import" class="tl_form" method="post">
 <div class="tl_formbody_edit">
 <input type="hidden" name="FORM_SUBMIT" value="tl_option_import" />
+<input type="hidden" name="REQUEST_TOKEN" value="' . REQUEST_TOKEN . '">
 
 <div class="tl_tbox block">
   <h3><label for="separator">'.$GLOBALS['TL_LANG']['MSC']['separator'][0].'</label></h3>
