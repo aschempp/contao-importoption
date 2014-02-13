@@ -1,93 +1,76 @@
-<?php if (!defined('TL_ROOT')) die('You cannot access this file directly!');
+<?php
 
 /**
- * Contao Open Source CMS
- * Copyright (C) 2005-2011 Leo Feyer
+ * importoption Extension for Contao Open Source CMS
  *
- * Formerly known as TYPOlight Open Source CMS.
- *
- * This program is free software: you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation, either
- * version 3 of the License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this program. If not, please visit the Free
- * Software Foundation website at <http://www.gnu.org/licenses/>.
- *
- * PHP version 5
- * @copyright  Andreas Schempp 2009-2012
- * @author     Andreas Schempp <andreas@schempp.ch>
- * @license    http://opensource.org/licenses/lgpl-3.0.html
+ * @copyright  Copyright (c) 2014, terminal42 gmbh
+ * @author     terminal42 gmbh <info@terminal42.ch>
+ * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
+ * @link       http://github.com/aschempp/contao-importoption
  */
 
 
 class ImportOptionWizard extends OptionWizard
 {
-	
-	public function __get($strKey)
-	{
-		switch( $strKey )
-		{
-			case 'xlabel':
-				return ' <a href="' . $this->addToUrl('key=importOption&table='.$this->strTable.'&field='.$this->strName) . '" title="' . specialchars($GLOBALS['TL_LANG']['MSC']['importOption'][1]) . '" onclick="Backend.getScrollOffset();">' . $this->generateImage('tablewizard.gif', $GLOBALS['TL_LANG']['MSC']['importOption'][0], 'style="vertical-align:text-bottom;"') . '</a>';
-				break;
-				
-			default:
-				return parent::__get($strKey);
-		}
-	}
-	
-	
-	
-	/**
-	 * Return a form to choose a CSV file and import it
-	 * @param object
-	 * @return string
-	 */
-	public function importOption()
-	{
-		if ($this->Input->get('key') != 'importOption')
-		{
-			return '';
-		}
 
-		// Import CSS
-		if ($this->Input->post('FORM_SUBMIT') == 'tl_option_import')
-		{
-			if (!$this->Input->post('source') || !is_array($this->Input->post('source')))
-			{
-				$_SESSION['TL_ERROR'][] = $GLOBALS['TL_LANG']['ERR']['all_fields'];
-				$this->reload();
-			}
+    public function __get($strKey)
+    {
+        switch( $strKey )
+        {
+            case 'xlabel':
+                return ' <a href="' . $this->addToUrl('key=importOption&table='.$this->strTable.'&field='.$this->strName) . '" title="' . specialchars($GLOBALS['TL_LANG']['MSC']['importOption'][1]) . '" onclick="Backend.getScrollOffset();">' . $this->generateImage('tablewizard.gif', $GLOBALS['TL_LANG']['MSC']['importOption'][0], 'style="vertical-align:text-bottom;"') . '</a>';
+                break;
 
-			$arrOptions = $this->readCSV($this->Input->post('source'), $this->Input->post('separator'));
-			
-			$strData = serialize($arrOptions);
-			if (strlen($strData) > 65000)
-			{
-				$_SESSION['TL_ERROR'][] = $GLOBALS['TL_LANG']['ERR']['csvSize'];
-				$this->reload();
-			}
-			
-			$this->import('Database');
-			$this->createNewVersion($this->Input->get('table'), $this->Input->get('id'));
-			$this->Database->prepare("UPDATE " . $this->Input->get('table') . " SET " . $this->Input->get('field') . "=? WHERE id=?")
-						   ->execute($strData, $this->Input->get('id'));
+            default:
+                return parent::__get($strKey);
+        }
+    }
 
-			setcookie('BE_PAGE_OFFSET', 0, 0, '/');
-			$this->redirect(str_replace(array('&key=importOption', '&field='.$this->Input->get('field')), '', $this->Environment->request));
-		}
 
-		$objTree = new FileTree($this->prepareForWidget($GLOBALS['TL_DCA']['tl_form_field']['fields']['source'], 'source', null, 'source', 'tl_form_field'));
 
-		// Return form
-		return '
+    /**
+     * Return a form to choose a CSV file and import it
+     * @param object
+     * @return string
+     */
+    public function importOption()
+    {
+        if ($this->Input->get('key') != 'importOption')
+        {
+            return '';
+        }
+
+        // Import CSS
+        if ($this->Input->post('FORM_SUBMIT') == 'tl_option_import')
+        {
+            if (!$this->Input->post('source') || !is_array($this->Input->post('source')))
+            {
+                $_SESSION['TL_ERROR'][] = $GLOBALS['TL_LANG']['ERR']['all_fields'];
+                $this->reload();
+            }
+
+            $arrOptions = $this->readCSV($this->Input->post('source'), $this->Input->post('separator'));
+
+            $strData = serialize($arrOptions);
+            if (strlen($strData) > 65000)
+            {
+                $_SESSION['TL_ERROR'][] = $GLOBALS['TL_LANG']['ERR']['csvSize'];
+                $this->reload();
+            }
+
+            $this->import('Database');
+            $this->createNewVersion($this->Input->get('table'), $this->Input->get('id'));
+            $this->Database->prepare("UPDATE " . $this->Input->get('table') . " SET " . $this->Input->get('field') . "=? WHERE id=?")
+                           ->execute($strData, $this->Input->get('id'));
+
+            setcookie('BE_PAGE_OFFSET', 0, 0, '/');
+            $this->redirect(str_replace(array('&key=importOption', '&field='.$this->Input->get('field')), '', $this->Environment->request));
+        }
+
+        $objTree = new FileTree($this->prepareForWidget($GLOBALS['TL_DCA']['tl_form_field']['fields']['source'], 'source', null, 'source', 'tl_form_field'));
+
+        // Return form
+        return '
 <div id="tl_buttons">
 <a href="'.ampersand(str_replace(array('&key=importOption', '&field='.$this->Input->get('field')), '', $this->Environment->request)).'" class="header_back" title="'.specialchars($GLOBALS['TL_LANG']['MSC']['backBT']).'">'.$GLOBALS['TL_LANG']['MSC']['backBT'].'</a>
 </div>
@@ -122,110 +105,110 @@ class ImportOptionWizard extends OptionWizard
 
 </div>
 </form>';
-	}
-	
-	
-	public function loadCSV(Widget $objWidget, $intForm)
-	{
-		if ($objWidget->loadCSV)
-		{
-			$strChecksum = md5($objWidget->source);
-			if ($objWidget->csvCache)
-			{
-				if (file_exists(TL_ROOT . '/system/tmp/' . $strChecksum))
-				{
-					$objFile = new File('system/tmp/' . $strChecksum);
-	
-					if ($objFile->mtime > time() - 86400)
-					{
-						$arrOptions = deserialize($objFile->getContent());
-					}
-					else
-					{
-						$objFile->delete();
-					}
-				}
-			}
+    }
 
-			// Cache result
-			if (is_null($arrOptions))
-			{
-				$arrFiles = deserialize($objWidget->source);
-				if (is_array($arrFiles) && count($arrFiles))
-				{
-					$arrOptions = $this->readCSV($arrFiles, $objWidget->csvSeparator);
-					
-					// Cache
-					if ($objWidget->csvCache)
-					{
-						$objFile = new File('system/tmp/' . $strChecksum);
-						$objFile->write(serialize($arrOptions));
-						$objFile->close();
-					}
-				}
-			}
-			
-			$objWidget->options = $arrOptions;
-		}
-		
-	    return $objWidget;
-	}
-	
-	
-	protected function readCSV($arrFiles, $strSeparator)
-	{
-		$arrOptions = array();
-		
-		// Get separator
-		switch ($strSeparator)
-		{
-			case 'semicolon':
-				$strSeparator = ';';
-				break;
 
-			case 'tabulator':
-				$strSeparator = '\t';
-				break;
+    public function loadCSV(Widget $objWidget, $intForm)
+    {
+        if ($objWidget->loadCSV)
+        {
+            $strChecksum = md5($objWidget->source);
+            if ($objWidget->csvCache)
+            {
+                if (file_exists(TL_ROOT . '/system/tmp/' . $strChecksum))
+                {
+                    $objFile = new File('system/tmp/' . $strChecksum);
 
-			default:
-				$strSeparator = ',';
-				break;
-		}
-		
-		foreach ($arrFiles as $strCsvFile)
-		{
-			$objFile = new File($strCsvFile);
+                    if ($objFile->mtime > time() - 86400)
+                    {
+                        $arrOptions = deserialize($objFile->getContent());
+                    }
+                    else
+                    {
+                        $objFile->delete();
+                    }
+                }
+            }
 
-			if ($objFile->extension != 'csv')
-			{
-				$_SESSION['TL_ERROR'][] = sprintf($GLOBALS['TL_LANG']['ERR']['filetype'], $objFile->extension);
-				continue;
-			}
+            // Cache result
+            if (is_null($arrOptions))
+            {
+                $arrFiles = deserialize($objWidget->source);
+                if (is_array($arrFiles) && count($arrFiles))
+                {
+                    $arrOptions = $this->readCSV($arrFiles, $objWidget->csvSeparator);
 
-			$strFile = $objFile->getContent();
-			$arrRows = trimsplit('\n', $strFile);
+                    // Cache
+                    if ($objWidget->csvCache)
+                    {
+                        $objFile = new File('system/tmp/' . $strChecksum);
+                        $objFile->write(serialize($arrOptions));
+                        $objFile->close();
+                    }
+                }
+            }
 
-			foreach ($arrRows as $k=>$v)
-			{
-				$arrRows[$k] = trimsplit($strSeparator, $v);
-			}
+            $objWidget->options = $arrOptions;
+        }
 
-			$arrOptions = array_merge($arrOptions, $arrRows);
-		}
-		
-		foreach( $arrOptions as $k => $option )
-		{
-			$arrOptions[$k] = array
-			(
-				'value'		=> $option[0],
-				'label'		=> $option[1],
-				'default'	=> $option[2],
-				'group'		=> $option[3],
-			);
-		}
-		
-		return $arrOptions;
-	}
-	
+        return $objWidget;
+    }
+
+
+    protected function readCSV($arrFiles, $strSeparator)
+    {
+        $arrOptions = array();
+
+        // Get separator
+        switch ($strSeparator)
+        {
+            case 'semicolon':
+                $strSeparator = ';';
+                break;
+
+            case 'tabulator':
+                $strSeparator = '\t';
+                break;
+
+            default:
+                $strSeparator = ',';
+                break;
+        }
+
+        foreach ($arrFiles as $strCsvFile)
+        {
+            $objFile = new File($strCsvFile);
+
+            if ($objFile->extension != 'csv')
+            {
+                $_SESSION['TL_ERROR'][] = sprintf($GLOBALS['TL_LANG']['ERR']['filetype'], $objFile->extension);
+                continue;
+            }
+
+            $strFile = $objFile->getContent();
+            $arrRows = trimsplit('\n', $strFile);
+
+            foreach ($arrRows as $k=>$v)
+            {
+                $arrRows[$k] = trimsplit($strSeparator, $v);
+            }
+
+            $arrOptions = array_merge($arrOptions, $arrRows);
+        }
+
+        foreach( $arrOptions as $k => $option )
+        {
+            $arrOptions[$k] = array
+            (
+                'value'        => $option[0],
+                'label'        => $option[1],
+                'default'    => $option[2],
+                'group'        => $option[3],
+            );
+        }
+
+        return $arrOptions;
+    }
+
 }
 
