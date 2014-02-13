@@ -30,17 +30,19 @@ $GLOBALS['TL_DCA']['tl_form_field']['fields']['loadCSV'] = array
     'inputType'         => 'checkbox',
     'exclude'           => true,
     'eval'              => array('submitOnChange'=>true),
+    'sql'               => "char(1) NOT NULL default ''",
 );
 
-$GLOBALS['TL_DCA']['tl_form_field']['fields']['source']         = array
+$GLOBALS['TL_DCA']['tl_form_field']['fields']['source'] = array
 (
     'label'             => &$GLOBALS['TL_LANG']['tl_form_field']['source'],
     'inputType'         => 'fileTree',
     'exclude'           => true,
-    'eval'              => array('mandatory'=>true, 'fieldType'=>'checkbox', 'files'=>true, 'filesOnly'=>true, 'extensions'=>'csv')
+    'eval'              => array('mandatory'=>true, 'fieldType'=>'checkbox', 'files'=>true, 'filesOnly'=>true, 'extensions'=>'csv'),
+    'sql'               => "varchar(255) NOT NULL default ''",
 );
 
-$GLOBALS['TL_DCA']['tl_form_field']['fields']['csvSeparator']   = array
+$GLOBALS['TL_DCA']['tl_form_field']['fields']['csvSeparator'] = array
 (
     'label'             => &$GLOBALS['TL_LANG']['MSC']['separator'],
     'inputType'         => 'select',
@@ -48,6 +50,7 @@ $GLOBALS['TL_DCA']['tl_form_field']['fields']['csvSeparator']   = array
     'options'           => array('comma', 'semicolon', 'tabulator'),
     'reference'         => &$GLOBALS['TL_LANG']['MSC'],
     'eval'              => array('tl_class'=>'w50'),
+    'sql'               => "varchar(10) NOT NULL default ''",
 );
 
 $GLOBALS['TL_DCA']['tl_form_field']['fields']['csvCache'] = array
@@ -57,5 +60,6 @@ $GLOBALS['TL_DCA']['tl_form_field']['fields']['csvCache'] = array
     'exclude'           => true,
     'default'           => '1',
     'eval'              => array('tl_class'=>'w50 m12'),
+    'sql'               => "char(1) NOT NULL default ''",
 );
 
