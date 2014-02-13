@@ -35,21 +35,21 @@ class ImportOptionWizard extends OptionWizard
      */
     public function importOption()
     {
-        if ($this->Input->get('key') != 'importOption')
+        if (\Input::get('key') != 'importOption')
         {
             return '';
         }
 
         // Import CSS
-        if ($this->Input->post('FORM_SUBMIT') == 'tl_option_import')
+        if (\Input::post('FORM_SUBMIT') == 'tl_option_import')
         {
-            if (!$this->Input->post('source') || !is_array($this->Input->post('source')))
+            if (\Input::post('source') == '')
             {
                 $_SESSION['TL_ERROR'][] = $GLOBALS['TL_LANG']['ERR']['all_fields'];
                 $this->reload();
             }
 
-            $arrOptions = $this->readCSV($this->Input->post('source'), $this->Input->post('separator'));
+            $arrOptions = $this->readCSV(trimsplit(',', \Input::post('source')), \Input::post('separator'));
 
             $strData = serialize($arrOptions);
             if (strlen($strData) > 65000)
@@ -59,12 +59,12 @@ class ImportOptionWizard extends OptionWizard
             }
 
             $this->import('Database');
-            $this->createNewVersion($this->Input->get('table'), $this->Input->get('id'));
-            $this->Database->prepare("UPDATE " . $this->Input->get('table') . " SET " . $this->Input->get('field') . "=? WHERE id=?")
-                           ->execute($strData, $this->Input->get('id'));
+            $this->createNewVersion(\Input::get('table'), \Input::get('id'));
+            $this->Database->prepare("UPDATE " . \Input::get('table') . " SET " . \Input::get('field') . "=? WHERE id=?")
+                           ->execute($strData, \Input::get('id'));
 
             setcookie('BE_PAGE_OFFSET', 0, 0, '/');
-            $this->redirect(str_replace(array('&key=importOption', '&field='.$this->Input->get('field')), '', $this->Environment->request));
+            $this->redirect(str_replace(array('&key=importOption', '&field='.\Input::get('field')), '', $this->Environment->request));
         }
 
         $objTree = new FileTree($this->prepareForWidget($GLOBALS['TL_DCA']['tl_form_field']['fields']['source'], 'source', null, 'source', 'tl_form_field'));
@@ -72,7 +72,7 @@ class ImportOptionWizard extends OptionWizard
         // Return form
         return '
 <div id="tl_buttons">
-<a href="'.ampersand(str_replace(array('&key=importOption', '&field='.$this->Input->get('field')), '', $this->Environment->request)).'" class="header_back" title="'.specialchars($GLOBALS['TL_LANG']['MSC']['backBT']).'">'.$GLOBALS['TL_LANG']['MSC']['backBT'].'</a>
+<a href="'.ampersand(str_replace(array('&key=importOption', '&field='.\Input::get('field')), '', $this->Environment->request)).'" class="header_back" title="'.specialchars($GLOBALS['TL_LANG']['MSC']['backBT']).'">'.$GLOBALS['TL_LANG']['MSC']['backBT'].'</a>
 </div>
 
 <h2 class="sub_headline">'.$GLOBALS['TL_LANG']['MSC']['importOption'][1].'</h2>'.$this->getMessages().'
@@ -158,6 +158,7 @@ class ImportOptionWizard extends OptionWizard
     protected function readCSV($arrFiles, $strSeparator)
     {
         $arrOptions = array();
+        $arrAllRows = array();
 
         // Get separator
         switch ($strSeparator)
@@ -175,8 +176,11 @@ class ImportOptionWizard extends OptionWizard
                 break;
         }
 
-        foreach ($arrFiles as $strCsvFile)
+        foreach ($arrFiles as $UUID)
         {
+            $objFile = \FilesModel::findByPk($UUID);
+            $strCsvFile = $objFile->path;
+
             $objFile = new File($strCsvFile);
 
             if ($objFile->extension != 'csv')
@@ -188,21 +192,23 @@ class ImportOptionWizard extends OptionWizard
             $strFile = $objFile->getContent();
             $arrRows = trimsplit('\n', $strFile);
 
-            foreach ($arrRows as $k=>$v)
+            foreach ($arrRows as $v)
             {
-                $arrRows[$k] = trimsplit($strSeparator, $v);
+                $arrAllRows[] = str_getcsv($v, $strSeparator);
             }
-
-            $arrOptions = array_merge($arrOptions, $arrRows);
         }
 
-        foreach( $arrOptions as $k => $option )
+        foreach ($arrAllRows as $option)
         {
-            $arrOptions[$k] = array
+            if ($option[0] == '' && $option[1] == '') {
+                continue;
+            }
+
+            $arrOptions[] = array
             (
                 'value'        => $option[0],
                 'label'        => $option[1],
-                'default'    => $option[2],
+                'default'      => $option[2],
                 'group'        => $option[3],
             );
         }

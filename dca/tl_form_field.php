@@ -14,6 +14,7 @@
  * Palettes
  */
 $GLOBALS['TL_DCA']['tl_form_field']['palettes']['select'] = str_replace(',options;', ',options,loadCSV;', $GLOBALS['TL_DCA']['tl_form_field']['palettes']['select']);
+$GLOBALS['TL_DCA']['tl_form_field']['palettes']['conditionalselect'] = str_replace(',options;', ',options,loadCSV;', $GLOBALS['TL_DCA']['tl_form_field']['palettes']['select']);
 $GLOBALS['TL_DCA']['tl_form_field']['palettes']['radio'] = str_replace(',options;', ',options,loadCSV;', $GLOBALS['TL_DCA']['tl_form_field']['palettes']['radio']);
 $GLOBALS['TL_DCA']['tl_form_field']['palettes']['checkbox'] = str_replace(',options;', ',options,loadCSV;', $GLOBALS['TL_DCA']['tl_form_field']['palettes']['checkbox']);
 
@@ -38,8 +39,8 @@ $GLOBALS['TL_DCA']['tl_form_field']['fields']['source'] = array
     'label'             => &$GLOBALS['TL_LANG']['tl_form_field']['source'],
     'inputType'         => 'fileTree',
     'exclude'           => true,
-    'eval'              => array('mandatory'=>true, 'fieldType'=>'checkbox', 'files'=>true, 'filesOnly'=>true, 'extensions'=>'csv'),
-    'sql'               => "varchar(255) NOT NULL default ''",
+    'eval'              => array('mandatory'=>true, 'multiple'=>true, 'fieldType'=>'checkbox', 'files'=>true, 'filesOnly'=>true, 'extensions'=>'csv'),
+    'sql'               => "blob NULL",
 );
 
 $GLOBALS['TL_DCA']['tl_form_field']['fields']['csvSeparator'] = array
