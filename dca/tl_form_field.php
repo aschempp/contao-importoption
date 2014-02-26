@@ -13,10 +13,10 @@
 /**
  * Palettes
  */
-$GLOBALS['TL_DCA']['tl_form_field']['palettes']['select'] = str_replace(',options;', ',options,loadCSV;', $GLOBALS['TL_DCA']['tl_form_field']['palettes']['select']);
-$GLOBALS['TL_DCA']['tl_form_field']['palettes']['conditionalselect'] = str_replace(',options;', ',options,loadCSV;', $GLOBALS['TL_DCA']['tl_form_field']['palettes']['select']);
-$GLOBALS['TL_DCA']['tl_form_field']['palettes']['radio'] = str_replace(',options;', ',options,loadCSV;', $GLOBALS['TL_DCA']['tl_form_field']['palettes']['radio']);
-$GLOBALS['TL_DCA']['tl_form_field']['palettes']['checkbox'] = str_replace(',options;', ',options,loadCSV;', $GLOBALS['TL_DCA']['tl_form_field']['palettes']['checkbox']);
+$GLOBALS['TL_DCA']['tl_form_field']['palettes']['select'] = preg_replace('/([,;]options)([,;])/', '$1,loadCSV$2', $GLOBALS['TL_DCA']['tl_form_field']['palettes']['select']);
+$GLOBALS['TL_DCA']['tl_form_field']['palettes']['conditionalselect'] = preg_replace('/([,;]options)([,;])/', '$1,loadCSV$2', $GLOBALS['TL_DCA']['tl_form_field']['palettes']['conditionalselect']);
+$GLOBALS['TL_DCA']['tl_form_field']['palettes']['radio'] = preg_replace('/([,;]options)([,;])/', '$1,loadCSV$2', $GLOBALS['TL_DCA']['tl_form_field']['palettes']['radio']);
+$GLOBALS['TL_DCA']['tl_form_field']['palettes']['checkbox'] = preg_replace('/([,;]options)([,;])/', '$1,loadCSV$2', $GLOBALS['TL_DCA']['tl_form_field']['palettes']['checkbox']);
 
 $GLOBALS['TL_DCA']['tl_form_field']['palettes']['__selector__'][] = 'loadCSV';
 $GLOBALS['TL_DCA']['tl_form_field']['subpalettes']['loadCSV'] = 'source,csvSeparator,csvCache';
