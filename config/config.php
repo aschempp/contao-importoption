@@ -30,7 +30,7 @@
 /**
  * Backend fields
  */
-$GLOBALS['BE_FFL']['optionWizard']	= 'ImportOptionWizard';
+$GLOBALS['BE_FFL']['optionWizard'] = 'ImportOptionWizard';
 
 
 /**

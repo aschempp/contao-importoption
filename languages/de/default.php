@@ -30,11 +30,11 @@
 /**
  * Miscellaneous
  */
-$GLOBALS['TL_LANG']['MSC']['importOption']	= array('CSV-Import', 'Optionseinträge aus einer CSV-Datei importieren');
+$GLOBALS['TL_LANG']['MSC']['importOption'] = array('CSV-Import', 'Optionseinträge aus einer CSV-Datei importieren');
 
 
 /**
  * Errors
  */
-$GLOBALS['TL_LANG']['ERR']['csvSize']		= 'Die zu importierende Datenmenge ist zu gross! Verwenden Sie die ggf. die Option "CSV-Daten laden".';
+$GLOBALS['TL_LANG']['ERR']['csvSize'] = 'Die zu importierende Datenmenge ist zu gross! Verwenden Sie die ggf. die Option "CSV-Daten laden".';
 
